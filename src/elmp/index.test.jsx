@@ -1,12 +1,12 @@
-// The app's setupTest.js mocks the plugin framework for every test; this suite needs the real one.
-jest.unmock('@openedx/frontend-plugin-framework');
-
 import { getConfig, mergeConfig } from '@edx/frontend-platform';
 import { IntlProvider } from '@edx/frontend-platform/i18n';
 import { PluginSlot } from '@openedx/frontend-plugin-framework';
 import { render, screen } from '@testing-library/react';
 
 import applyElmpPluginSlots from '.';
+
+// The app's setupTest.js mocks the plugin framework for every test; this suite needs the real one.
+jest.unmock('@openedx/frontend-plugin-framework');
 
 const FOOTER = 'org.openedx.frontend.layout.footer.v1';
 

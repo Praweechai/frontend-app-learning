@@ -50,6 +50,7 @@ jest.mock('./course-home/discussion-tab/DiscussionTab', () => 'Discussion Tab');
 jest.mock('./course-home/progress-tab/ProgressTab', () => 'Progress Tab');
 jest.mock('./courseware/course/course-exit', () => ({ CourseExit: 'Course Exit' }));
 jest.mock('./courseware', () => 'Courseware Container');
+jest.mock('./elmp', () => ({})); // ELMP: keep upstream subscribe() call order
 
 describe('app registry', () => {
   let getElement;
