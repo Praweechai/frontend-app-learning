@@ -36,6 +36,7 @@ import DecodePageRoute from './decode-page-route';
 import { DECODE_ROUTES, ROUTES } from './constants';
 import PreferencesUnsubscribe from './preferences-unsubscribe';
 import PageNotFound from './generic/PageNotFound';
+import './elmp'; // ELMP: Classroom slot wiring (see ELMP-CHANGES.md)
 
 subscribe(APP_READY, () => {
   const root = createRoot(document.getElementById('root'));
