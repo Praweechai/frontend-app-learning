@@ -1,0 +1,17 @@
+/* ELMP S-76: the app's own bottom Previous/Next (kept for its section-to-section and course-end logic)
+   restyled as the Classroom nav bar (doc 04 §5.12). The top navigation is removed by UnitHeading. */
+.unit-navigation {
+  position: sticky; bottom: 0; z-index: 20; gap: 12px; justify-content: space-between !important;
+  margin: 24px -16px 0; padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
+  background: #fff; border-top: 1px solid var(--cls-border, #DDE3DF);
+}
+.unit-navigation .previous-button,
+.unit-navigation .next-button { min-height: 44px; border-radius: 10px; font-weight: 600; flex: 0 1 auto !important; }
+.unit-navigation .previous-button { border-color: transparent; background: transparent; color: var(--cls-action, #03692A); }
+.unit-navigation .next-button { min-width: 160px; background: var(--cls-action, #03692A); border-color: var(--cls-action, #03692A); color: #fff; }
+.unit-navigation .next-button:hover,
+.unit-navigation .next-button:focus { background: #025622; border-color: #025622; color: #fff; }
+.unit-navigation .btn:focus-visible { box-shadow: 0 0 0 3px #fff, 0 0 0 5px #03692A; }
+@media (min-width: 1280px) {
+  .unit-navigation { margin: 24px 0 0; border: 1px solid var(--cls-border, #DDE3DF); border-radius: 12px; }
+}
