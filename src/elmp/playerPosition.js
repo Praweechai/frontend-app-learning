@@ -7,7 +7,8 @@ export const playerPosition = (state, sequenceId, unitId) => {
   const outline = courseware.courseOutline || {};
   if (courseware.courseStatus === 'loaded' && meta?.sectionIds && outline.sequences) {
     const sequenceIds = meta.sectionIds.flatMap((id) => models.sections?.[id]?.sequenceIds || []);
-    const unitIds = sequenceIds.flatMap((id) => outline.sequences[id]?.unitIds || models.sequences?.[id]?.unitIds || []);
+    const unitsOf = (id) => outline.sequences[id]?.unitIds || models.sequences?.[id]?.unitIds || [];
+    const unitIds = sequenceIds.flatMap(unitsOf);
     if (unitIds.length) {
       const i = unitIds.indexOf(unitId);
       out.unitCount = unitIds.length;

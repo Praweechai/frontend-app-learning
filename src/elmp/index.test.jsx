@@ -7,8 +7,8 @@ import applyElmpPluginSlots from '.';
 
 // The app's setupTest.js mocks the plugin framework for every test; this suite needs the real one.
 jest.unmock('@openedx/frontend-plugin-framework');
-jest.mock('./LearningHeader', () => () => <div>elmp header</div>);
-jest.mock('./UnitHeading', () => () => <div>elmp unit title</div>);
+jest.mock('./LearningHeader', () => function MockHeader() { return <div>elmp header</div>; });
+jest.mock('./UnitHeading', () => function MockUnitTitle() { return <div>elmp unit title</div>; });
 
 const FOOTER = 'org.openedx.frontend.layout.footer.v1';
 const HEADER = 'org.openedx.frontend.layout.header_learning.v1';
