@@ -10,7 +10,6 @@ import { AlertList } from '../../generic/user-messages';
 
 import CourseDates from './widgets/CourseDates';
 import CourseHandouts from './widgets/CourseHandouts';
-import StartOrResumeCourseCard from './widgets/StartOrResumeCourseCard';
 import WeeklyLearningGoalCard from './widgets/WeeklyLearningGoalCard';
 import CourseTools from './widgets/CourseTools';
 import { fetchOutlineTab } from '../data';
@@ -27,6 +26,7 @@ import WelcomeMessage from './widgets/WelcomeMessage';
 import ProctoringInfoPanel from './widgets/ProctoringInfoPanel';
 import AccountActivationAlert from '../../alerts/logistration-alert/AccountActivationAlert';
 import CourseHomeSectionOutlineSlot from '../../plugin-slots/CourseHomeSectionOutlineSlot';
+import CourseHomeHero from '../../elmp/CourseHomeHero'; // ELMP S-75
 
 const OutlineTab = () => {
   const intl = useIntl();
@@ -38,7 +38,6 @@ const OutlineTab = () => {
   const {
     isSelfPaced,
     org,
-    title,
   } = useModel('courseHomeMeta', courseId);
 
   const expandButtonRef = useRef();
@@ -118,10 +117,9 @@ const OutlineTab = () => {
 
   return (
     <>
-      <div data-learner-type={learnerType} className="row w-100 mx-0 my-3 justify-content-between">
-        <div className="col-12 col-sm-auto p-0">
-          <div role="heading" aria-level="1" className="h2">{title}</div>
-        </div>
+      {/* ELMP S-75: Classroom hero replaces the title row and the Start/Resume card */}
+      <div data-learner-type={learnerType} className="w-100 my-3">
+        <CourseHomeHero courseId={courseId} />
       </div>
       <div className="row course-outline-tab">
         <AccountActivationAlert />
@@ -150,7 +148,6 @@ const OutlineTab = () => {
               <UpgradeToShiftDatesAlert model="outline" logUpgradeLinkClick={logUpgradeToShiftDatesLinkClick} />
             </>
           )}
-          <StartOrResumeCourseCard />
           <WelcomeMessage courseId={courseId} nextElementRef={expandButtonRef} />
           {rootCourseId && (
             <>

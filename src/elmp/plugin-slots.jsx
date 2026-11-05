@@ -4,6 +4,7 @@ import CourseHomeOutline from './CourseHomeOutline';
 import LearningHeader from './LearningHeader';
 import { ElmpOutlineDrawer, OutlineBridge } from './OutlineDrawer';
 import UnitHeading from './UnitHeading';
+import './course-home.css';
 import './player.css';
 
 const replaceWith = (id, RenderWidget) => ({

@@ -1,0 +1,2 @@
+/* ELMP S-75: the Classroom outline has its own Expand/Collapse all; hide the upstream button row. */
+.course-outline-tab #expand-button-row { display: none; }

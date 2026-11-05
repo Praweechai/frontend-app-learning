@@ -10,3 +10,5 @@ Rule (C-8): plugin slots first; an upstream file is edited only when no slot or 
 | `src/index.test.jsx` | `jest.mock('./elmp', () => ({}))` (1 line) | Upstream test reads `subscribe` calls by position; our module adds one | Delete the line |
 | `package.json` | dependency `@elmp/classroom-kit` (git tag) | Shared Classroom kit (R-15 §3): header, player top bar, unit title | Remove the dependency |
 | `package-lock.json` | lock entry for the kit (`git+https`, pinned commit) | `npm ci` in CI and in the image build | `npm uninstall @elmp/classroom-kit` |
+| `src/course-home/outline-tab/OutlineTab.jsx` | Title row + Start/Resume card → `<CourseHomeHero>` (import + 4 lines; 2 unused names removed) | No slot covers the course title or the Start/Resume card; S-75 hero needs both (P3-5.02) | Restore the title `div` and `<StartOrResumeCourseCard />` |
+| `src/course-home/outline-tab/OutlineTab.test.jsx` | `jest.mock('../../elmp/CourseHomeHero', …)` (1 line) → upstream tests see the upstream Start/Resume card | Keeps upstream tests checking upstream behaviour; ours are in `src/elmp` | Delete the line |

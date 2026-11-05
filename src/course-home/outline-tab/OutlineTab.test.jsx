@@ -27,6 +27,7 @@ const mockCoursewareSearchParams = jest.fn();
 
 initializeMockApp();
 jest.mock('@edx/frontend-platform/analytics');
+jest.mock('../../elmp/CourseHomeHero', () => jest.requireActual('./widgets/StartOrResumeCourseCard').default); // ELMP
 jest.mock('../courseware-search/hooks', () => ({
   ...jest.requireActual('../courseware-search/hooks'),
   useCoursewareSearchParams: () => mockCoursewareSearchParams,
