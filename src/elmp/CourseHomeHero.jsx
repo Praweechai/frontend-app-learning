@@ -1,8 +1,11 @@
+import { useContext } from 'react';
 import PropTypes from 'prop-types';
 import { Event, Schedule, ViewList } from '@openedx/paragon/icons';
+import { getConfig } from '@edx/frontend-platform';
 import { sendTrackingLogEvent } from '@edx/frontend-platform/analytics';
+import { AppContext } from '@edx/frontend-platform/react';
 import {
-  CourseHero, formatDate, getPortalClient, messages, useClassroomIntl, usePortal,
+  CertificatePreview, CourseHero, formatDate, getPortalClient, localized, messages, useClassroomIntl, usePortal,
 } from '@elmp/classroom-kit';
 
 import { useModel } from '../generic/model-store';
@@ -40,6 +43,11 @@ export const heroData = ({
   };
 };
 
+// Earned course certificate → its page on the LMS (same rule as the upstream certificate alert).
+export const certificateHref = (certData, lmsBase = getConfig().LMS_BASE_URL) => (
+  certData?.certWebViewUrl ? `${lmsBase}${certData.certWebViewUrl}` : undefined
+);
+
 // ELMP: top of the course home (doc 04 §6.5). Rendered by OutlineTab in place of its title and
 // Start/Resume card (ELMP-CHANGES.md).
 const CourseHomeHero = ({ courseId }) => {
@@ -47,7 +55,14 @@ const CourseHomeHero = ({ courseId }) => {
   const { locale } = intl;
   const { title, number, org } = useModel('courseHomeMeta', courseId) || {};
   const outline = useModel('outline', courseId) || {};
-  const { courseBlocks: { courses = {}, sections = {}, sequences = {} } = {}, resumeCourse = {} } = outline;
+  const {
+    courseBlocks: { courses = {}, sections = {}, sequences = {} } = {}, resumeCourse = {}, certData,
+  } = outline;
+  const { authenticatedUser } = useContext(AppContext);
+  const me = usePortal((opts) => getPortalClient().me(opts));
+  const learnerName = me.data?.data
+    ? localized(me.data.data.name, locale)
+    : (authenticatedUser?.name || authenticatedUser?.username);
   const rootId = Object.keys(courses)[0];
   const ctx = usePortal((opts) => getPortalClient().courseContext(courseId, opts), [courseId]);
   const data = heroData({
@@ -97,6 +112,13 @@ const CourseHomeHero = ({ courseId }) => {
         facts={facts}
         requiredBy={data.requiredBy}
         progress={progress}
+        aside={(
+          <CertificatePreview
+            courseTitle={title || ''}
+            learnerName={learnerName || undefined}
+            href={certificateHref(certData)}
+          />
+        )}
       />
     </div>
   );

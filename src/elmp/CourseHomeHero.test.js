@@ -1,4 +1,4 @@
-import { heroData } from './CourseHomeHero';
+import { certificateHref, heroData } from './CourseHomeHero';
 
 describe('heroData (S-75 hero)', () => {
   const sections = {
@@ -38,5 +38,13 @@ describe('heroData (S-75 hero)', () => {
       sectionIds: ['a'], sections, sequences: allDone, resumeCourse: { hasVisitedCourse: true },
     }).progress).toMatchObject({ action: 'review', percent: 100, href: undefined });
     expect(heroData({})).toMatchObject({ total: 0, requiredBy: [], nextDue: undefined });
+  });
+});
+
+describe('certificateHref', () => {
+  it('points to the earned certificate page, nothing before', () => {
+    expect(certificateHref({ certWebViewUrl: '/certificates/abc' }, 'http://lms')).toBe('http://lms/certificates/abc');
+    expect(certificateHref({ certStatus: 'notpassing' }, 'http://lms')).toBeUndefined();
+    expect(certificateHref(undefined, 'http://lms')).toBeUndefined();
   });
 });
