@@ -32,6 +32,8 @@ const elmpPluginSlots = {
   'org.openedx.frontend.learning.course_outline_sidebar.v1': replaceWith('elmp_outline_drawer', ElmpOutlineDrawer),
   'org.openedx.frontend.learning.course_outline_sidebar_trigger.v1': replaceWith('elmp_outline_bridge', OutlineBridge),
   'org.openedx.frontend.learning.course_outline_mobile_sidebar_trigger.v1': { keepDefault: false, plugins: [] },
+  // S-77 has its own "Back to My learning"; the upstream "View courses" button goes to the old dashboard.
+  'org.openedx.frontend.learning.course_exit_view_courses.v1': { keepDefault: false, plugins: [] },
 };
 
 export default elmpPluginSlots;

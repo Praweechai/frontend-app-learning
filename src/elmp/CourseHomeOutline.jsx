@@ -9,9 +9,13 @@ import { useModel } from '../generic/model-store';
 import { useContextId } from '../data/hooks';
 
 // The kit's links take `href`; inside the app we route without a page reload.
-export const RouterLink = forwardRef(({ href, ...rest }, ref) => <Link ref={ref} to={href} {...rest} />);
+export const RouterLink = forwardRef(({ href, children, ...rest }, ref) => (
+  href.startsWith('/course/')
+    ? <Link ref={ref} to={href} {...rest}>{children}</Link>
+    : <a ref={ref} href={href} {...rest}>{children}</a>
+));
 RouterLink.displayName = 'RouterLink';
-RouterLink.propTypes = { href: PropTypes.string.isRequired };
+RouterLink.propTypes = { href: PropTypes.string.isRequired, children: PropTypes.node };
 
 // Course blocks → kit outline. Hidden blocks are left out. "Current" = first unfinished subsection in the
 // section Open edX marks as the resume point (the upstream outline opens that section too).

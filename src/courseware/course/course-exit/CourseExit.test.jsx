@@ -20,6 +20,7 @@ import CourseNonPassing from './CourseNonPassing';
 
 initializeMockApp();
 jest.mock('@edx/frontend-platform/analytics');
+jest.mock('../../../elmp/CourseFinishedPage', () => function Upstream({ fallback }) { return fallback; }); // ELMP
 
 describe('Course Exit Pages', () => {
   let axiosMock;

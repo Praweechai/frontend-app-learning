@@ -11,6 +11,7 @@ import { unsubscribeFromGoalReminders } from './data/thunks';
 import { CourseExitViewCoursesPluginSlot } from '../../../plugin-slots/CourseExitPluginSlots';
 
 import { useModel } from '../../../generic/model-store';
+import CourseFinishedPage from '../../../elmp/CourseFinishedPage'; // ELMP S-77
 
 const CourseExit = () => {
   const { courseId } = useSelector(state => state.courseware);
@@ -53,7 +54,7 @@ const CourseExit = () => {
   } else if (mode === COURSE_EXIT_MODES.inProgress) {
     body = (<CourseInProgress />);
   } else if (mode === COURSE_EXIT_MODES.celebration) {
-    body = (<CourseCelebration />);
+    body = (<CourseFinishedPage fallback={<CourseCelebration />} />); // ELMP S-77
   } else {
     return (<Navigate to={`/course/${courseId}`} replace />);
   }

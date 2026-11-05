@@ -19,6 +19,7 @@ const OUTLINE = 'org.openedx.frontend.learning.course_home_section_outline.v1';
 const DRAWER = 'org.openedx.frontend.learning.course_outline_sidebar.v1';
 const TRIGGER = 'org.openedx.frontend.learning.course_outline_sidebar_trigger.v1';
 const MOBILE_TRIGGER = 'org.openedx.frontend.learning.course_outline_mobile_sidebar_trigger.v1';
+const VIEW_COURSES = 'org.openedx.frontend.learning.course_exit_view_courses.v1';
 
 describe('ELMP slot wiring', () => {
   it('keeps slots that env.config.jsx already set and adds ours', () => {
@@ -28,7 +29,7 @@ describe('ELMP slot wiring', () => {
 
     const slots = getConfig().pluginSlots;
     expect(slots['other.slot']).toBeDefined();
-    [FOOTER, HEADER, UNIT_TITLE, OUTLINE, DRAWER, TRIGGER, MOBILE_TRIGGER]
+    [FOOTER, HEADER, UNIT_TITLE, OUTLINE, DRAWER, TRIGGER, MOBILE_TRIGGER, VIEW_COURSES]
       .forEach((id) => expect(slots[id].keepDefault).toBe(false));
   });
 
