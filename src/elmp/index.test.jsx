@@ -10,11 +10,15 @@ jest.unmock('@openedx/frontend-plugin-framework');
 jest.mock('./LearningHeader', () => function MockHeader() { return <div>elmp header</div>; });
 jest.mock('./UnitHeading', () => function MockUnitTitle() { return <div>elmp unit title</div>; });
 jest.mock('./CourseHomeOutline', () => function MockOutline() { return <div>elmp outline</div>; });
+jest.mock('./OutlineDrawer', () => ({ ElmpOutlineDrawer: () => null, OutlineBridge: () => null }));
 
 const FOOTER = 'org.openedx.frontend.layout.footer.v1';
 const HEADER = 'org.openedx.frontend.layout.header_learning.v1';
 const UNIT_TITLE = 'org.openedx.frontend.learning.unit_title.v1';
 const OUTLINE = 'org.openedx.frontend.learning.course_home_section_outline.v1';
+const DRAWER = 'org.openedx.frontend.learning.course_outline_sidebar.v1';
+const TRIGGER = 'org.openedx.frontend.learning.course_outline_sidebar_trigger.v1';
+const MOBILE_TRIGGER = 'org.openedx.frontend.learning.course_outline_mobile_sidebar_trigger.v1';
 
 describe('ELMP slot wiring', () => {
   it('keeps slots that env.config.jsx already set and adds ours', () => {
@@ -24,7 +28,8 @@ describe('ELMP slot wiring', () => {
 
     const slots = getConfig().pluginSlots;
     expect(slots['other.slot']).toBeDefined();
-    [FOOTER, HEADER, UNIT_TITLE, OUTLINE].forEach((id) => expect(slots[id].keepDefault).toBe(false));
+    [FOOTER, HEADER, UNIT_TITLE, OUTLINE, DRAWER, TRIGGER, MOBILE_TRIGGER]
+      .forEach((id) => expect(slots[id].keepDefault).toBe(false));
   });
 
   it('removes the Open edX footer', () => {

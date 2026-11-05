@@ -9,6 +9,7 @@ import {
   ClassroomHeader, PlayerTopBar, getPortalClient, localized, usePortal,
 } from '@elmp/classroom-kit';
 
+import { requestOutlineToggle, useOutlineState } from './outlineEvents';
 import { playerPosition } from './playerPosition';
 
 // Course pages get the Classroom header (S-75); the player gets its own top bar (S-76).
@@ -75,6 +76,7 @@ const PlayerHeader = ({
 }) => {
   const position = useSelector((state) => playerPosition(state, sequenceId, unitId), shallowEqual);
   const title = useSelector((state) => courseTitle || state.models.coursewareMeta?.[courseId]?.title || '');
+  const outline = useOutlineState();
   return (
     <PlayerTopBar
       courseTitle={title}
@@ -82,6 +84,8 @@ const PlayerHeader = ({
       unitIndex={position.unitIndex}
       unitCount={position.unitCount}
       progress={position.progress}
+      outlineOpen={outline.open}
+      onToggleOutline={outline.available ? requestOutlineToggle : undefined}
     />
   );
 };

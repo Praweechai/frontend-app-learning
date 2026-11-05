@@ -2,6 +2,7 @@ import { DIRECT_PLUGIN, PLUGIN_OPERATIONS } from '@openedx/frontend-plugin-frame
 
 import CourseHomeOutline from './CourseHomeOutline';
 import LearningHeader from './LearningHeader';
+import { ElmpOutlineDrawer, OutlineBridge } from './OutlineDrawer';
 import UnitHeading from './UnitHeading';
 import './player.css';
 
@@ -26,6 +27,10 @@ const elmpPluginSlots = {
   'org.openedx.frontend.learning.unit_title.v1': replaceWith('elmp_unit_title', UnitHeading),
   // Course outline on the course home: Classroom sections, done counts, "you are here" (S-75).
   'org.openedx.frontend.learning.course_home_section_outline.v1': replaceWith('elmp_course_outline', CourseHomeOutline),
+  // Player outline drawer; its button is in the top bar, so the old triggers become a bridge / nothing (S-76).
+  'org.openedx.frontend.learning.course_outline_sidebar.v1': replaceWith('elmp_outline_drawer', ElmpOutlineDrawer),
+  'org.openedx.frontend.learning.course_outline_sidebar_trigger.v1': replaceWith('elmp_outline_bridge', OutlineBridge),
+  'org.openedx.frontend.learning.course_outline_mobile_sidebar_trigger.v1': { keepDefault: false, plugins: [] },
 };
 
 export default elmpPluginSlots;
