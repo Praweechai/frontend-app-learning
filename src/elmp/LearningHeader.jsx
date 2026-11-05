@@ -6,11 +6,12 @@ import { getConfig } from '@edx/frontend-platform';
 import { useIntl } from '@edx/frontend-platform/i18n';
 import { AppContext } from '@edx/frontend-platform/react';
 import {
-  ClassroomHeader, PlayerTopBar, getPortalClient, localized, usePortal,
+  ClassroomHeader, PlayerTopBar, getPortalClient, localized, messages as kitMessages, useClassroomIntl, usePortal,
 } from '@elmp/classroom-kit';
 
 import { requestOutlineToggle, useOutlineState } from './outlineEvents';
 import { playerPosition } from './playerPosition';
+import { usePlayerShortcuts } from './playerKeys';
 
 // Course pages get the Classroom header (S-75); the player gets its own top bar (S-76).
 const PAGE_ROUTES = [
@@ -77,16 +78,28 @@ const PlayerHeader = ({
   const position = useSelector((state) => playerPosition(state, sequenceId, unitId), shallowEqual);
   const title = useSelector((state) => courseTitle || state.models.coursewareMeta?.[courseId]?.title || '');
   const outline = useOutlineState();
+  const unitTitle = useSelector((state) => state.models.units?.[unitId]?.title || '');
+  const kitIntl = useClassroomIntl();
+  usePlayerShortcuts();
+  // F-94 AC-2: "Unit 3 of 8, Hand hygiene" is read out when the unit changes.
+  const announcement = [
+    position.unitIndex && position.unitCount
+      ? kitIntl.formatMessage(kitMessages.unitOf, { i: position.unitIndex, n: position.unitCount }) : '',
+    unitTitle,
+  ].filter(Boolean).join(', ');
   return (
-    <PlayerTopBar
-      courseTitle={title}
-      courseHref={courseHomeHref(courseId)}
-      unitIndex={position.unitIndex}
-      unitCount={position.unitCount}
-      progress={position.progress}
-      outlineOpen={outline.open}
-      onToggleOutline={outline.available ? requestOutlineToggle : undefined}
-    />
+    <>
+      <PlayerTopBar
+        courseTitle={title}
+        courseHref={courseHomeHref(courseId)}
+        unitIndex={position.unitIndex}
+        unitCount={position.unitCount}
+        progress={position.progress}
+        outlineOpen={outline.open}
+        onToggleOutline={outline.available ? requestOutlineToggle : undefined}
+      />
+      <p className="cls-sr" role="status">{announcement}</p>
+    </>
   );
 };
 
