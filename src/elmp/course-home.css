@@ -1,2 +1,4 @@
 /* ELMP S-75: the Classroom outline has its own Expand/Collapse all; hide the upstream button row. */
 .course-outline-tab #expand-button-row { display: none; }
+/* ELMP S-75: no "Course Tools" box (Bookmarks, Launch tour) — not in the Classroom design (P3-7 finding). No slot exists. */
+.course-outline-tab section:has(#courseHome-launchTourLink) { display: none; }
