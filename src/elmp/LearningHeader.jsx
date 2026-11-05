@@ -51,7 +51,11 @@ const CourseHeader = () => {
   const { authenticatedUser } = useContext(AppContext);
   const me = usePortal((opts) => getPortalClient().me(opts));
   const data = me.data?.data;
-  const links = { ...dashboardLinks(config), portal: data?.has_portal_work ? config.ELMP_PORTAL_HOME_URL : undefined };
+  const links = {
+    ...dashboardLinks(config),
+    hours: data?.features?.ce_hours ? dashboardLinks(config).hours : undefined, // Plan 4 F-112
+    portal: data?.has_portal_work ? config.ELMP_PORTAL_HOME_URL : undefined,
+  };
   const name = data ? localized(data.name, locale) : (authenticatedUser?.name || authenticatedUser?.username || '');
   const user = name ? {
     name,

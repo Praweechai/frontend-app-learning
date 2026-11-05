@@ -1,21 +1,21 @@
 import { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
-import { getConfig } from '@edx/frontend-platform';
 import {
   CourseFinished, LinkContext, getPortalClient, nextRequiredCourse, usePortal,
 } from '@elmp/classroom-kit';
 
 import { useModel } from '../generic/model-store';
+import { CERTIFICATES_PAGE } from './CourseHomeHero';
 import { RouterLink } from './CourseHomeOutline';
 import { dashboardLinks } from './LearningHeader';
 
 // Certificate states the upstream screen must keep handling (request button, ID verification).
 export const UPSTREAM_STATUSES = ['requesting', 'unverified'];
 
-export const finishedCertificateHref = (certificateData, lmsBase = getConfig().LMS_BASE_URL) => (
-  certificateData?.certStatus === 'downloadable' && certificateData.certWebViewUrl
-    ? `${lmsBase}${certificateData.certWebViewUrl}` : undefined
+// Plan 4 F-113: the certificate lives on the Classroom Certificates page (Portal PDF).
+export const finishedCertificateHref = (certificateData, page = CERTIFICATES_PAGE) => (
+  certificateData?.certStatus === 'downloadable' && certificateData.certWebViewUrl ? page : undefined
 );
 
 // CA-05 result → what the screen says about the training record.

@@ -2,11 +2,11 @@ import { UPSTREAM_STATUSES, finishedCertificateHref, recordState } from './Cours
 
 describe('S-77 helpers', () => {
   it('links the certificate only when it can be viewed', () => {
-    expect(finishedCertificateHref({ certStatus: 'downloadable', certWebViewUrl: '/certificates/abc' }, 'http://lms'))
-      .toBe('http://lms/certificates/abc');
-    expect(finishedCertificateHref({ certStatus: 'earned_but_not_available', certWebViewUrl: '/x' }, 'http://lms'))
+    expect(finishedCertificateHref({ certStatus: 'downloadable', certWebViewUrl: '/certificates/abc' }))
+      .toBe('/learner-dashboard/certificates');
+    expect(finishedCertificateHref({ certStatus: 'earned_but_not_available', certWebViewUrl: '/x' }))
       .toBeUndefined();
-    expect(finishedCertificateHref(undefined, 'http://lms')).toBeUndefined();
+    expect(finishedCertificateHref(undefined)).toBeUndefined();
   });
 
   it('reports the Portal refresh', () => {

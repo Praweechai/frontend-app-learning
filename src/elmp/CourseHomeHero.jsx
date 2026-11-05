@@ -1,7 +1,6 @@
 import { useContext } from 'react';
 import PropTypes from 'prop-types';
 import { Event, Schedule, ViewList } from '@openedx/paragon/icons';
-import { getConfig } from '@edx/frontend-platform';
 import { sendTrackingLogEvent } from '@edx/frontend-platform/analytics';
 import { AppContext } from '@edx/frontend-platform/react';
 import {
@@ -43,9 +42,11 @@ export const heroData = ({
   };
 };
 
-// Earned course certificate → its page on the LMS (same rule as the upstream certificate alert).
-export const certificateHref = (certData, lmsBase = getConfig().LMS_BASE_URL) => (
-  certData?.certWebViewUrl ? `${lmsBase}${certData.certWebViewUrl}` : undefined
+// Plan 4 F-113: an earned certificate is the Portal's PDF, listed on the Classroom Certificates page
+// (the Open edX certificate page is not shown to learners). Same "earned" rule as the upstream alert.
+export const CERTIFICATES_PAGE = '/learner-dashboard/certificates';
+export const certificateHref = (certData, page = CERTIFICATES_PAGE) => (
+  certData?.certWebViewUrl ? page : undefined
 );
 
 // ELMP: top of the course home (doc 04 §6.5). Rendered by OutlineTab in place of its title and

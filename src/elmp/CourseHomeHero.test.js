@@ -42,9 +42,9 @@ describe('heroData (S-75 hero)', () => {
 });
 
 describe('certificateHref', () => {
-  it('points to the earned certificate page, nothing before', () => {
-    expect(certificateHref({ certWebViewUrl: '/certificates/abc' }, 'http://lms')).toBe('http://lms/certificates/abc');
-    expect(certificateHref({ certStatus: 'notpassing' }, 'http://lms')).toBeUndefined();
-    expect(certificateHref(undefined, 'http://lms')).toBeUndefined();
+  it('earned → Classroom Certificates page (Portal PDF, Plan 4 F-113), nothing before', () => {
+    expect(certificateHref({ certWebViewUrl: '/certificates/abc' })).toBe('/learner-dashboard/certificates');
+    expect(certificateHref({ certStatus: 'notpassing' })).toBeUndefined();
+    expect(certificateHref(undefined)).toBeUndefined();
   });
 });
