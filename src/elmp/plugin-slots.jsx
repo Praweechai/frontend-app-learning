@@ -1,5 +1,6 @@
 import { DIRECT_PLUGIN, PLUGIN_OPERATIONS } from '@openedx/frontend-plugin-framework';
 
+import CourseHomeOutline from './CourseHomeOutline';
 import LearningHeader from './LearningHeader';
 import UnitHeading from './UnitHeading';
 import './player.css';
@@ -23,6 +24,8 @@ const elmpPluginSlots = {
   'org.openedx.frontend.layout.footer.v1': { keepDefault: false, plugins: [] },
   // Unit title as H1 with the subsection name; no top Previous/Next (S-76).
   'org.openedx.frontend.learning.unit_title.v1': replaceWith('elmp_unit_title', UnitHeading),
+  // Course outline on the course home: Classroom sections, done counts, "you are here" (S-75).
+  'org.openedx.frontend.learning.course_home_section_outline.v1': replaceWith('elmp_course_outline', CourseHomeOutline),
 };
 
 export default elmpPluginSlots;
