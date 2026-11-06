@@ -10,6 +10,7 @@ import {
 } from '@elmp/classroom-kit';
 
 import { requestOutlineToggle, useOutlineState } from './outlineEvents';
+import PlayerActivity from './PlayerActivity';
 import { playerPosition } from './playerPosition';
 import { usePlayerShortcuts } from './playerKeys';
 
@@ -34,6 +35,7 @@ export const dashboardLinks = (config = getConfig()) => {
   const base = (config.ELMP_CLASSROOM_HOME_URL || '/learner-dashboard/').replace(/\/$/, '');
   return {
     home: `${base}/`,
+    courses: `${base}/courses`,
     certificates: `${base}/certificates`,
     hours: `${base}/hours`,
     account: config.ELMP_ACCOUNT_URL || undefined,
@@ -103,6 +105,7 @@ const PlayerHeader = ({
         onToggleOutline={outline.available ? requestOutlineToggle : undefined}
       />
       <p className="cls-sr" role="status">{announcement}</p>
+      <PlayerActivity courseId={courseId} />
     </>
   );
 };

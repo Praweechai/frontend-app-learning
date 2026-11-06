@@ -1,8 +1,14 @@
-import { act, render } from '@testing-library/react';
+import {
+  act, fireEvent, render, screen,
+} from '@testing-library/react';
+import { IntlProvider } from '@edx/frontend-platform/i18n';
+import { Provider } from 'react-redux';
+import { MemoryRouter } from 'react-router-dom';
 
 import SidebarContext from '../courseware/course/sidebar/SidebarContext';
 import { ID } from '../courseware/course/sidebar/sidebars/course-outline/constants';
-import { OutlineBridge, drawerOutline } from './OutlineDrawer';
+import { useCourseOutlineSidebar } from '../courseware/course/sidebar/sidebars/course-outline/hooks';
+import { ElmpOutlineDrawer, OutlineBridge, drawerOutline } from './OutlineDrawer';
 import { STATE_EVENT, requestOutlineToggle } from './outlineEvents';
 
 jest.mock('../courseware/course/sidebar/sidebars/course-outline/hooks', () => ({ useCourseOutlineSidebar: jest.fn() }));
@@ -64,5 +70,50 @@ describe('OutlineBridge', () => {
     expect(states).toEqual([
       { open: false, available: true }, { open: true, available: true }, { open: false, available: false },
     ]);
+  });
+});
+
+describe('ElmpOutlineDrawer (P4-6 · F-116)', () => {
+  const store = { getState: () => ({ models: { coursewareMeta: {} } }), subscribe: () => () => {}, dispatch: () => {} };
+  const base = {
+    courseId: 'course-v1:MH+INF101+2026',
+    unitId: 'u1',
+    isActiveEntranceExam: false,
+    sections: { c1: { sequenceIds: ['s1', 's2'] } },
+    sequences: { s1: { id: 's1', title: 'Basics', unitIds: ['u1'] }, s2: { id: 's2', title: 'Practice', unitIds: ['u2'] } },
+    units: { u1: { title: 'Video', complete: true }, u2: { title: 'Quiz' } },
+    handleUnitClick: jest.fn(),
+  };
+  const show = () => render(
+    <IntlProvider locale="en"><MemoryRouter><Provider store={store}><ElmpOutlineDrawer /></Provider></MemoryRouter></IntlProvider>,
+  );
+
+  it('open: numbered tree 1, 1.1, 2, 2.1', () => {
+    useCourseOutlineSidebar.mockReturnValue({
+      ...base, currentSidebar: ID, handleToggleCollapse: jest.fn(), shouldDisplayFullScreen: false,
+    });
+    const { container } = show();
+    expect([...container.querySelectorAll('.cls-outline__num')].map((n) => n.textContent)).toEqual(['1', '1.1', '2', '2.1']);
+  });
+
+  it('hidden on a wide screen: the rail brings it back', () => {
+    const handleToggleCollapse = jest.fn();
+    useCourseOutlineSidebar.mockReturnValue({
+      ...base, currentSidebar: null, handleToggleCollapse, shouldDisplayFullScreen: false,
+    });
+    show();
+    fireEvent.click(screen.getByRole('button', { name: 'Show course outline' }));
+    expect(handleToggleCollapse).toHaveBeenCalled();
+  });
+
+  it('hidden on a phone or during an entrance exam: nothing (the top bar button stays)', () => {
+    useCourseOutlineSidebar.mockReturnValue({
+      ...base, currentSidebar: null, handleToggleCollapse: jest.fn(), shouldDisplayFullScreen: true,
+    });
+    const { container, unmount } = show();
+    expect(container).toBeEmptyDOMElement();
+    unmount();
+    useCourseOutlineSidebar.mockReturnValue({ ...base, isActiveEntranceExam: true, currentSidebar: ID });
+    expect(show().container).toBeEmptyDOMElement();
   });
 });

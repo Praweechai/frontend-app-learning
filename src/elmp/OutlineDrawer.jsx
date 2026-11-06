@@ -1,6 +1,6 @@
 import { useContext, useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { LinkContext, OutlineDrawer } from '@elmp/classroom-kit';
+import { LinkContext, OutlineDrawer, OutlineRail } from '@elmp/classroom-kit';
 
 import SidebarContext from '../courseware/course/sidebar/SidebarContext';
 import { ID } from '../courseware/course/sidebar/sidebars/course-outline/constants';
@@ -34,13 +34,15 @@ export const drawerOutline = ({
 
 // ELMP: CourseOutlineSidebarSlot widget. Same data and behaviour as the upstream tray (loading,
 // completion check on click, closes on phones after a click), Classroom look.
+// Plan 4 F-116: numbered tree (1 → 1.1); when hidden, a 40 px rail with ☰ brings it back (wide screens).
 export const ElmpOutlineDrawer = () => {
   const {
     courseId, unitId, currentSidebar, handleToggleCollapse, isActiveEntranceExam, shouldDisplayFullScreen,
     sections, sequences, units, handleUnitClick,
   } = useCourseOutlineSidebar();
   const sectionOrder = useSelector((state) => state.models.coursewareMeta?.[courseId]?.sectionIds);
-  if (isActiveEntranceExam || currentSidebar !== ID) { return null; }
+  if (isActiveEntranceExam) { return null; }
+  if (currentSidebar !== ID) { return shouldDisplayFullScreen ? null : <OutlineRail onOpen={handleToggleCollapse} />; }
   return (
     <LinkContext.Provider value={RouterLink}>
       <OutlineDrawer
