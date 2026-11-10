@@ -8,7 +8,9 @@ import { MemoryRouter } from 'react-router-dom';
 import SidebarContext from '../courseware/course/sidebar/SidebarContext';
 import { ID } from '../courseware/course/sidebar/sidebars/course-outline/constants';
 import { useCourseOutlineSidebar } from '../courseware/course/sidebar/sidebars/course-outline/hooks';
-import { ElmpOutlineDrawer, OutlineBridge, drawerOutline } from './OutlineDrawer';
+import {
+  ElmpOutlineDrawer, OutlineBridge, drawerOutline, outlineProgress,
+} from './OutlineDrawer';
 import { STATE_EVENT, requestOutlineToggle } from './outlineEvents';
 
 jest.mock('../courseware/course/sidebar/sidebars/course-outline/hooks', () => ({ useCourseOutlineSidebar: jest.fn() }));
@@ -73,7 +75,7 @@ describe('OutlineBridge', () => {
   });
 });
 
-describe('ElmpOutlineDrawer (P4-6 · F-116)', () => {
+describe('ElmpOutlineDrawer (P5-4.02 · F-136; P4-6 · F-116)', () => {
   const store = { getState: () => ({ models: { coursewareMeta: {} } }), subscribe: () => () => {}, dispatch: () => {} };
   const base = {
     courseId: 'course-v1:MH+INF101+2026',
@@ -88,12 +90,29 @@ describe('ElmpOutlineDrawer (P4-6 · F-116)', () => {
     <IntlProvider locale="en"><MemoryRouter><Provider store={store}><ElmpOutlineDrawer /></Provider></MemoryRouter></IntlProvider>,
   );
 
-  it('open: numbered tree 1, 1.1, 2, 2.1', () => {
+  it('open (Plan 5 panel): course progress, modules with %, numbered units 1.1 / 2.1, unit click', () => {
     useCourseOutlineSidebar.mockReturnValue({
       ...base, currentSidebar: ID, handleToggleCollapse: jest.fn(), shouldDisplayFullScreen: false,
     });
     const { container } = show();
-    expect([...container.querySelectorAll('.cls-outline__num')].map((n) => n.textContent)).toEqual(['1', '1.1', '2', '2.1']);
+    expect(screen.getByRole('progressbar', { name: 'Course progress' })).toHaveAttribute('aria-valuenow', '50');
+    expect(screen.getByRole('button', { name: /Basics.*100%/ })).toHaveAttribute('aria-expanded', 'true');
+    fireEvent.click(screen.getByRole('button', { name: /Practice.*0%/ }));
+    expect([...container.querySelectorAll('.cls3-unit__num')].map((n) => n.textContent)).toEqual(['1.1', '2.1']);
+    fireEvent.click(screen.getByRole('link', { name: /Quiz/ }));
+    expect(base.handleUnitClick).toHaveBeenCalledWith({ sequenceId: 's2', activeUnitId: 'u1', id: 'u2' });
+    expect(outlineProgress([{ items: [{ complete: true }, {}] }, { items: [] }])).toBe(50);
+  });
+
+  it('phone: overlay panel with a close button', () => {
+    const handleToggleCollapse = jest.fn();
+    useCourseOutlineSidebar.mockReturnValue({
+      ...base, currentSidebar: ID, handleToggleCollapse, shouldDisplayFullScreen: true,
+    });
+    show();
+    expect(screen.getByRole('complementary')).toHaveClass('cls3-outline--overlay');
+    fireEvent.click(screen.getByRole('button', { name: 'Close course outline' }));
+    expect(handleToggleCollapse).toHaveBeenCalled();
   });
 
   it('hidden on a wide screen: the rail brings it back', () => {

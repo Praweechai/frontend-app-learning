@@ -1,6 +1,6 @@
 import { useContext, useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { LinkContext, OutlineDrawer, OutlineRail } from '@elmp/classroom-kit';
+import { LinkContext, OutlinePanel, OutlineRail } from '@elmp/classroom-kit';
 
 import SidebarContext from '../courseware/course/sidebar/SidebarContext';
 import { ID } from '../courseware/course/sidebar/sidebars/course-outline/constants';
@@ -32,9 +32,16 @@ export const drawerOutline = ({
     }));
 };
 
+// Course progress for the panel = units done / all units the learner can see (same as the module bars).
+export const outlineProgress = (sections) => {
+  const items = sections.flatMap((s) => s.items);
+  return items.length ? Math.round((items.filter((i) => i.complete).length / items.length) * 100) : 0;
+};
+
 // ELMP: CourseOutlineSidebarSlot widget. Same data and behaviour as the upstream tray (loading,
 // completion check on click, closes on phones after a click), Classroom look.
-// Plan 4 F-116: numbered tree (1 → 1.1); when hidden, a 40 px rail with ☰ brings it back (wide screens).
+// Plan 5 F-136: kit OutlinePanel (Course outline / Resources tabs, search, course progress, modules with %).
+// When hidden, a 40 px rail with ☰ brings it back (wide screens, Plan 4 F-116).
 export const ElmpOutlineDrawer = () => {
   const {
     courseId, unitId, currentSidebar, handleToggleCollapse, isActiveEntranceExam, shouldDisplayFullScreen,
@@ -43,15 +50,21 @@ export const ElmpOutlineDrawer = () => {
   const sectionOrder = useSelector((state) => state.models.coursewareMeta?.[courseId]?.sectionIds);
   if (isActiveEntranceExam) { return null; }
   if (currentSidebar !== ID) { return shouldDisplayFullScreen ? null : <OutlineRail onOpen={handleToggleCollapse} />; }
+  const outline = drawerOutline({
+    courseId, unitId, sectionOrder, sections, sequences, units,
+  });
   return (
     <LinkContext.Provider value={RouterLink}>
-      <OutlineDrawer
-        sections={drawerOutline({
-          courseId, unitId, sectionOrder, sections, sequences, units,
-        })}
+      <OutlinePanel
+        id="elmp-outline"
+        sections={outline}
+        progress={outlineProgress(outline)}
         overlay={shouldDisplayFullScreen}
-        onClose={handleToggleCollapse}
-        onNavigate={(item) => handleUnitClick({ sequenceId: item.sequenceId, activeUnitId: unitId, id: item.id })}
+        onClose={shouldDisplayFullScreen ? handleToggleCollapse : undefined}
+        onNavigate={(item) => {
+          handleUnitClick({ sequenceId: item.sequenceId, activeUnitId: unitId, id: item.id });
+          if (shouldDisplayFullScreen) { handleToggleCollapse(); }
+        }}
       />
     </LinkContext.Provider>
   );

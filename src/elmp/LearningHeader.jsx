@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import { useContext, useEffect, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { shallowEqual, useSelector } from 'react-redux';
 import { matchPath, useLocation } from 'react-router-dom';
@@ -6,13 +6,19 @@ import { getConfig } from '@edx/frontend-platform';
 import { useIntl } from '@edx/frontend-platform/i18n';
 import { AppContext } from '@edx/frontend-platform/react';
 import {
-  ClassroomHeader, PlayerTopBar, getPortalClient, localized, messages as kitMessages, useClassroomIntl, usePortal,
+  ClassroomHeader, LinkContext, PlayerTopBar3, displayAttributes, flattenOutline, getPortalClient, localized,
+  messages as kitMessages, useClassroomIntl, useDisplaySettings, useFullscreen, useLessonDisplay, usePortal,
 } from '@elmp/classroom-kit';
 
+import { getCourseOutline } from '../courseware/data/selectors';
+import { RouterLink } from './CourseHomeOutline';
+import setClassroomLanguage from './language';
+import { drawerOutline } from './OutlineDrawer';
 import { requestOutlineToggle, useOutlineState } from './outlineEvents';
-import PlayerActivity from './PlayerActivity';
+import PlayerActivity, { originOf } from './PlayerActivity';
 import { playerPosition } from './playerPosition';
-import { usePlayerShortcuts } from './playerKeys';
+import { runShortcut, usePlayerShortcuts } from './playerKeys';
+import SideArrows from './SideArrows';
 
 // Course pages get the Classroom header (S-75); the player gets its own top bar (S-76).
 const PAGE_ROUTES = [
@@ -36,6 +42,8 @@ export const dashboardLinks = (config = getConfig()) => {
   return {
     home: `${base}/`,
     courses: `${base}/courses`,
+    grades: `${base}/grades`,
+    progress: `${base}/progress`,
     certificates: `${base}/certificates`,
     hours: `${base}/hours`,
     account: config.ELMP_ACCOUNT_URL || undefined,
@@ -78,15 +86,48 @@ const CourseHeader = () => {
   );
 };
 
+// Plan 5 (F-136, D-81): display settings live on <body class="cls3-player-page"> while the player is open,
+// and go to the lesson iframe (#unit-iframe) through the activity script (P5-3.02).
+export const usePageDisplay = (settings) => {
+  useEffect(() => {
+    const { body } = document;
+    const { style, ...attrs } = displayAttributes(settings);
+    body.classList.add('cls3-player-page', 'cls-root');
+    Object.entries(attrs).forEach(([k, v]) => (v ? body.setAttribute(k, v) : body.removeAttribute(k)));
+    Object.entries(style).forEach(([k, v]) => body.style.setProperty(k, String(v)));
+    return () => {
+      body.classList.remove('cls3-player-page', 'cls-root');
+      Object.keys(attrs).forEach((k) => body.removeAttribute(k));
+      Object.keys(style).forEach((k) => body.style.removeProperty(k));
+    };
+  }, [settings]);
+};
+
+const lessonFrame = { get current() { return document.getElementById('unit-iframe'); } };
+
 const PlayerHeader = ({
   courseId, sequenceId, unitId, courseTitle,
 }) => {
+  const { locale } = useIntl();
+  const config = getConfig();
+  const { authenticatedUser } = useContext(AppContext);
   const position = useSelector((state) => playerPosition(state, sequenceId, unitId), shallowEqual);
   const title = useSelector((state) => courseTitle || state.models.coursewareMeta?.[courseId]?.title || '');
+  const sectionOrder = useSelector((state) => state.models.coursewareMeta?.[courseId]?.sectionIds);
+  const outlineData = useSelector(getCourseOutline);
   const outline = useOutlineState();
   const unitTitle = useSelector((state) => state.models.units?.[unitId]?.title || '');
   const kitIntl = useClassroomIntl();
+  const display = useDisplaySettings();
+  const full = useFullscreen(() => document.documentElement);
   usePlayerShortcuts();
+  usePageDisplay(display.settings);
+  useLessonDisplay(lessonFrame, display.settings, originOf(config.LMS_BASE_URL));
+
+  const units = useMemo(() => flattenOutline(drawerOutline({
+    courseId, unitId, sectionOrder, ...(outlineData || {}),
+  })), [courseId, unitId, sectionOrder, outlineData]);
+
   // F-94 AC-2: "Unit 3 of 8, Hand hygiene" is read out when the unit changes.
   const announcement = [
     position.unitIndex && position.unitCount
@@ -94,19 +135,25 @@ const PlayerHeader = ({
     unitTitle,
   ].filter(Boolean).join(', ');
   return (
-    <>
-      <PlayerTopBar
+    <LinkContext.Provider value={RouterLink}>
+      <PlayerTopBar3
         courseTitle={title}
-        courseHref={courseHomeHref(courseId)}
-        unitIndex={position.unitIndex}
-        unitCount={position.unitCount}
-        progress={position.progress}
+        backHref={dashboardLinks(config).home}
+        logoUrl={config.LOGO_URL || undefined}
         outlineOpen={outline.open}
+        outlineId="elmp-outline"
         onToggleOutline={outline.available ? requestOutlineToggle : undefined}
+        display={display}
+        units={units}
+        locale={locale}
+        onLocaleChange={(code) => setClassroomLanguage(code, authenticatedUser?.username)}
+        fullscreen={full.on}
+        onToggleFullscreen={full.toggle}
       />
+      <SideArrows onPrev={() => runShortcut('prev')} onNext={() => runShortcut('next')} />
       <p className="cls-sr" role="status">{announcement}</p>
       <PlayerActivity courseId={courseId} />
-    </>
+    </LinkContext.Provider>
   );
 };
 

@@ -15,3 +15,10 @@
 @media (min-width: 1280px) {
   .unit-navigation { margin: 24px 0 0; border: 1px solid var(--cls-border, #DDE3DF); border-radius: 12px; }
 }
+
+/* Plan 5 S-105 (P5-4.02): big side arrows fixed at the middle of the screen (wide screens only), and the
+   player 3 top bar stays on top while the lesson scrolls. Dark mode for the app's own Paragon parts is
+   checked live in P5-6 (our parts follow body.cls3-player-page). */
+.elmp-side-arrows .cls3-arrow { position: fixed; z-index: 30; }
+@media (max-width: 767.98px) { .elmp-side-arrows { display: none; } }
+.cls3-player-page .cls3-ptop { z-index: 1030; }
