@@ -6,7 +6,7 @@ import { getConfig } from '@edx/frontend-platform';
 import { useIntl } from '@edx/frontend-platform/i18n';
 import { AppContext } from '@edx/frontend-platform/react';
 import {
-  ClassroomHeader, LinkContext, PlayerTopBar3, displayAttributes, flattenOutline, getPortalClient, localized,
+  ClassroomHeader, LinkContext, PlayerTopBar3, ReadingLine, displayAttributes, flattenOutline, getPortalClient, localized,
   messages as kitMessages, useClassroomIntl, useDisplaySettings, useFullscreen, useLessonDisplay, usePortal,
 } from '@elmp/classroom-kit';
 
@@ -15,7 +15,7 @@ import { RouterLink } from './CourseHomeOutline';
 import setClassroomLanguage from './language';
 import { drawerOutline } from './OutlineDrawer';
 import { requestOutlineToggle, useOutlineState } from './outlineEvents';
-import PlayerActivity, { originOf } from './PlayerActivity';
+import PlayerActivity, { originOf, usePlayerActivity } from './PlayerActivity';
 import { playerPosition } from './playerPosition';
 import { runShortcut, usePlayerShortcuts } from './playerKeys';
 import SideArrows from './SideArrows';
@@ -120,6 +120,7 @@ const PlayerHeader = ({
   const kitIntl = useClassroomIntl();
   const display = useDisplaySettings();
   const full = useFullscreen(() => document.documentElement);
+  const activity = usePlayerActivity(courseId);
   usePlayerShortcuts();
   usePageDisplay(display.settings);
   useLessonDisplay(lessonFrame, display.settings, originOf(config.LMS_BASE_URL));
@@ -149,10 +150,13 @@ const PlayerHeader = ({
         onLocaleChange={(code) => setClassroomLanguage(code, authenticatedUser?.username)}
         fullscreen={full.on}
         onToggleFullscreen={full.toggle}
+        session={activity.session}
+        sessionPaused={activity.idle.state !== 'active'}
       />
+      <div className="elmp-read"><ReadingLine /></div>
       <SideArrows onPrev={() => runShortcut('prev')} onNext={() => runShortcut('next')} />
       <p className="cls-sr" role="status">{announcement}</p>
-      <PlayerActivity courseId={courseId} />
+      <PlayerActivity activity={activity} />
     </LinkContext.Provider>
   );
 };

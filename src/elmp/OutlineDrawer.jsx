@@ -48,6 +48,8 @@ export const ElmpOutlineDrawer = () => {
     sections, sequences, units, handleUnitClick,
   } = useCourseOutlineSidebar();
   const sectionOrder = useSelector((state) => state.models.coursewareMeta?.[courseId]?.sectionIds);
+  // Player 4: certificate row at the end of the outline, unlocked by a passing grade → the course-finished page
+  const passed = useSelector((state) => Boolean(state.models.coursewareMeta?.[courseId]?.userHasPassingGrade));
   if (isActiveEntranceExam) { return null; }
   if (currentSidebar !== ID) { return shouldDisplayFullScreen ? null : <OutlineRail onOpen={handleToggleCollapse} />; }
   const outline = drawerOutline({
@@ -60,6 +62,7 @@ export const ElmpOutlineDrawer = () => {
         sections={outline}
         progress={outlineProgress(outline)}
         overlay={shouldDisplayFullScreen}
+        certificate={{ href: `/course/${courseId}/course-end`, unlocked: passed }}
         onClose={shouldDisplayFullScreen ? handleToggleCollapse : undefined}
         onNavigate={(item) => {
           handleUnitClick({ sequenceId: item.sequenceId, activeUnitId: unitId, id: item.id });

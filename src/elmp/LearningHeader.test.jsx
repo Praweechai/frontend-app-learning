@@ -18,6 +18,12 @@ jest.mock('./PlayerActivity', () => ({
   __esModule: true,
   default: () => null,
   originOf: (url) => { try { return new URL(url).origin; } catch (e) { return null; } },
+  usePlayerActivity: () => ({
+    idle: { state: 'active' },
+    session: {
+      seconds: 125, focusSeconds: 0, focusMin: 25, setFocusMin: () => {}, phase: 'learning',
+    },
+  }),
 }));
 
 // Plan 5 P5-4.02 — player 3 top bar in the learning app (S-105).

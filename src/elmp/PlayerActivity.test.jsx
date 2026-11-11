@@ -2,7 +2,7 @@ import { act, render, screen } from '@testing-library/react';
 import { mergeConfig } from '@edx/frontend-platform';
 import { IntlProvider } from '@edx/frontend-platform/i18n';
 
-import PlayerActivity, { originOf, pauseLessons } from './PlayerActivity';
+import PlayerActivity, { originOf, pauseLessons, usePlayerActivity } from './PlayerActivity';
 
 const mockClient = { me: jest.fn(), activity: jest.fn(), activityUrl: () => 'http://portal.local.openedx.io/api/classroom/v1/activity' };
 jest.mock('@elmp/classroom-kit', () => ({
@@ -13,7 +13,8 @@ jest.mock('@elmp/classroom-kit', () => ({
 const LMS = 'http://local.openedx.io';
 const KEY = 'course-v1:MH+INF101+2026';
 const me = (inactivity) => ({ data: { features: { inactivity } } });
-const show = () => render(<IntlProvider locale="en"><PlayerActivity courseId={KEY} /></IntlProvider>);
+const Harness = () => <PlayerActivity activity={usePlayerActivity(KEY)} />;
+const show = () => render(<IntlProvider locale="en"><Harness /></IntlProvider>);
 const tick = async (s) => { await act(async () => { jest.advanceTimersByTime(s * 1000); }); };
 
 describe('PlayerActivity (P4-6.02 · F-117, A4-9 with the 20 s test setting)', () => {
@@ -65,6 +66,31 @@ describe('PlayerActivity (P4-6.02 · F-117, A4-9 with the 20 s test setting)', (
     await tick(400);
     expect(screen.queryByRole('alertdialog')).toBeNull();
     expect(mockClient.activity).not.toHaveBeenCalled();
+  });
+
+  it('Player 4: focus block → break: videos paused, no idle warning and no clock during the break', async () => {
+    window.localStorage.setItem('elmp.focusMin', '15');
+    mockClient.me.mockResolvedValue(me({ enabled: true, idle_seconds: 300 }));
+    const frame = document.createElement('iframe');
+    document.body.appendChild(frame);
+    const post = jest.spyOn(frame.contentWindow, 'postMessage');
+    show();
+    await act(async () => {});
+    for (let i = 0; i < 4 * 15; i += 1) { // 15 min of a playing video keeps the learner active
+      act(() => { window.dispatchEvent(new MessageEvent('message', { data: { type: 'elmp.activity', kind: 'video-playing' }, origin: LMS })); });
+      // eslint-disable-next-line no-await-in-loop
+      await tick(15);
+    }
+    expect(screen.getByRole('dialog', { name: 'Time for a short break' })).toBeInTheDocument();
+    await act(async () => { screen.getByRole('button', { name: 'Take 5 minutes' }).click(); });
+    expect(screen.getByRole('dialog', { name: 'On a break' })).toBeInTheDocument();
+    expect(post).toHaveBeenCalledWith({ type: 'elmp.pause' }, LMS);
+    await tick(240); // 4 quiet minutes: no "still there?" during a break
+    expect(screen.queryByRole('alertdialog')).toBeNull();
+    await act(async () => { screen.getByRole('button', { name: 'I’m back' }).click(); });
+    expect(screen.queryByRole('dialog')).toBeNull();
+    window.localStorage.removeItem('elmp.focusMin');
+    frame.remove();
   });
 
   it('helpers', () => {

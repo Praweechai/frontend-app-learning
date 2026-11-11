@@ -22,3 +22,8 @@
 .elmp-side-arrows .cls3-arrow { position: fixed; z-index: 30; }
 @media (max-width: 767.98px) { .elmp-side-arrows { display: none; } }
 .cls3-player-page .cls3-ptop { z-index: 1030; }
+
+/* Plan 5 · V-4.03 (Player 4): reading line at the very top of the window, over the top bar's edge. */
+.elmp-read { position: fixed; top: 0; left: 0; right: 0; z-index: 1031; pointer-events: none; }
+/* End-of-page card under the lesson (SequenceContainerSlot). */
+.elmp-end { padding: 0 16px 24px; }

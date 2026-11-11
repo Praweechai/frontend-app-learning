@@ -2,6 +2,7 @@ import { DIRECT_PLUGIN, PLUGIN_OPERATIONS } from '@openedx/frontend-plugin-frame
 
 import CourseHomeOutline from './CourseHomeOutline';
 import LearningHeader from './LearningHeader';
+import LessonEnd from './LessonEnd';
 import { ElmpOutlineDrawer, OutlineBridge } from './OutlineDrawer';
 import UnitHeading from './UnitHeading';
 import './course-home.css';
@@ -34,6 +35,16 @@ const elmpPluginSlots = {
   'org.openedx.frontend.learning.course_outline_mobile_sidebar_trigger.v1': { keepDefault: false, plugins: [] },
   // S-77 has its own "Back to My learning"; the upstream "View courses" button goes to the old dashboard.
   'org.openedx.frontend.learning.course_exit_view_courses.v1': { keepDefault: false, plugins: [] },
+  // Player 4 (V-4.03): end-of-page card right under the lesson (what is left + Next), fed by bridge v2.
+  'org.openedx.frontend.learning.sequence_container.v1': {
+    keepDefault: true,
+    plugins: [{
+      op: PLUGIN_OPERATIONS.Insert,
+      widget: {
+        id: 'elmp_lesson_end', priority: 10, type: DIRECT_PLUGIN, RenderWidget: LessonEnd,
+      },
+    }],
+  },
 };
 
 export default elmpPluginSlots;
