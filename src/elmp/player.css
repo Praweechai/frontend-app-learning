@@ -12,6 +12,10 @@
 .unit-navigation .next-button:hover,
 .unit-navigation .next-button:focus { background: #025622; border-color: #025622; color: #fff; }
 .unit-navigation .btn:focus-visible { box-shadow: 0 0 0 3px #fff, 0 0 0 5px #03692A; }
+/* Phones: the page has 12 px side padding (container-xl), so pull out 12 px, not 16 (V-7.01: 4 px sideways scroll at 390). */
+@media (max-width: 575.98px) {
+  .unit-navigation { margin: 24px -12px 0; padding-left: 12px; padding-right: 12px; }
+}
 @media (min-width: 1280px) {
   .unit-navigation { margin: 24px 0 0; border: 1px solid var(--cls-border, #DDE3DF); border-radius: 12px; }
 }
