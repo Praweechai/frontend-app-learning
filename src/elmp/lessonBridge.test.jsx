@@ -1,11 +1,12 @@
-import { act, render, screen } from '@testing-library/react';
-import { renderHook } from '@testing-library/react';
+import {
+  act, render, screen, renderHook,
+} from '@testing-library/react';
 import { IntlProvider } from '@edx/frontend-platform/i18n';
 import { MemoryRouter } from 'react-router-dom';
 
+import { EndCard, LinkContext } from '@elmp/classroom-kit';
 import useLessonBridge, { frameViewport } from './lessonBridge';
 import { neighbours } from './LessonEnd';
-import { EndCard, LinkContext } from '@elmp/classroom-kit';
 
 // Plan 5 · V-4.03 — player side of bridge v2 (doc 10 §4.1).
 const LMS = 'http://local.openedx.io';
@@ -25,8 +26,9 @@ afterEach(() => { document.body.innerHTML = ''; jest.useRealTimers(); });
 
 describe('frameViewport', () => {
   it('is the part of the frame on screen, in frame coordinates', () => {
-    expect(frameViewport({ getBoundingClientRect: () => ({ top: 120, bottom: 3000 }) }, 900)).toEqual({ top: 0, height: 780 });
-    expect(frameViewport({ getBoundingClientRect: () => ({ top: -1500, bottom: 1500 }) }, 900)).toEqual({ top: 1500, height: 900 });
+    const at = (top, bottom) => ({ getBoundingClientRect: () => ({ top, bottom }) });
+    expect(frameViewport(at(120, 3000), 900)).toEqual({ top: 0, height: 780 });
+    expect(frameViewport(at(-1500, 1500), 900)).toEqual({ top: 1500, height: 900 });
     expect(frameViewport({ getBoundingClientRect: () => ({ top: -2000, bottom: -10 }) }, 900).height).toBe(0);
     expect(frameViewport(null)).toBeNull();
   });
@@ -86,7 +88,12 @@ describe('LessonEnd pieces', () => {
       <IntlProvider locale="en">
         <MemoryRouter>
           <LinkContext.Provider value={Link}>
-            <EndCard left={['video']} next={{ id: 'c', title: 'The 5 moments', href: '/course/x/s/c', number: '1.3' }} />
+            <EndCard
+              left={['video']}
+              next={{
+                id: 'c', title: 'The 5 moments', href: '/course/x/s/c', number: '1.3',
+              }}
+            />
           </LinkContext.Provider>
         </MemoryRouter>
       </IntlProvider>,

@@ -6,7 +6,8 @@ import { getConfig } from '@edx/frontend-platform';
 import { useIntl } from '@edx/frontend-platform/i18n';
 import { AppContext } from '@edx/frontend-platform/react';
 import {
-  ClassroomHeader, LinkContext, PlayerTopBar3, ReadingLine, displayAttributes, flattenOutline, getPortalClient, localized,
+  ClassroomHeader, LinkContext, PlayerTopBar3, ReadingLine, displayAttributes, flattenOutline, getPortalClient,
+  localized,
   messages as kitMessages, useClassroomIntl, useDisplaySettings, useFullscreen, useLessonDisplay, usePortal,
 } from '@elmp/classroom-kit';
 
