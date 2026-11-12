@@ -66,12 +66,13 @@ describe('LearningHeader — player 3 (P5-4.02)', () => {
     mergeConfig({ LMS_BASE_URL: 'http://local.openedx.io', ELMP_CLASSROOM_HOME_URL: '/learner-dashboard/' });
   });
 
-  it('top bar: back to My Learning, course title, five tools; side arrows press the bottom buttons', () => {
+  it('top bar: back to My Learning, course title, four tools (no dark mode); side arrows press the bottom buttons', () => {
     show();
     expect(screen.getByRole('link', { name: 'Back to My Learning' })).toHaveAttribute('href', '/learner-dashboard/');
     expect(screen.getByText('Infection Control')).toBeInTheDocument();
-    ['Dark mode', 'Search in this course', 'Choose language', 'Accessibility options']
+    ['Search in this course', 'Choose language', 'Accessibility options']
       .forEach((name) => expect(screen.getByRole('button', { name })).toBeInTheDocument());
+    expect(screen.queryByRole('button', { name: 'Dark mode' })).toBeNull(); // V-7.02: dark mode removed
     const next = document.querySelector('.unit-navigation .next-button');
     const click = jest.fn();
     next.addEventListener('click', click);
@@ -83,8 +84,7 @@ describe('LearningHeader — player 3 (P5-4.02)', () => {
   it('display settings go on <body> while the player is open, and come off after', () => {
     const { unmount } = show();
     expect(document.body).toHaveClass('cls3-player-page');
-    fireEvent.click(screen.getByRole('button', { name: 'Dark mode' }));
-    expect(document.body).toHaveAttribute('data-theme', 'dark');
+    expect(document.body).toHaveAttribute('data-theme', 'light'); // V-7.02: always light
     unmount();
     expect(document.body).not.toHaveClass('cls3-player-page');
     expect(document.body).not.toHaveAttribute('data-theme');
